@@ -82,4 +82,4 @@ spec:
       volumes:
       - name: nginx-proxy-config
         configMap:
-          name: {{ .Release.Name }}-nginx-conf
+          name: {{ .Release.Name }}-nginx-configmap
