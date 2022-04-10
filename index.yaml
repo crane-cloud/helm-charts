@@ -3,7 +3,17 @@ entries:
   cranecloud-backend:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2022-04-10T09:17:01.016243+03:00"
+    created: "2022-04-10T12:54:54.528513+03:00"
+    description: A Helm chart for cranecloud applications
+    digest: cd7099f5c340febd86c8c78da5905cd6df2ecbf223d1fa89b232f80551fb105f
+    name: cranecloud-backend
+    type: application
+    urls:
+    - cranecloud-backend-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-04-10T12:54:54.527946+03:00"
     description: A Helm chart for cranecloud applications
     digest: 06e09a47d67a94bf17c2ef3291a0ce7d878f3dd1c4d6ed716ed05b8cf9653206
     name: cranecloud-backend
@@ -11,4 +21,4 @@ entries:
     urls:
     - cranecloud-backend-0.1.0.tgz
     version: 0.1.0
-generated: "2022-04-10T09:17:01.015222+03:00"
+generated: "2022-04-10T12:54:54.526191+03:00"
