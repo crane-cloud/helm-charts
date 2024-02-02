@@ -5,13 +5,14 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/crane-cloud-274413/cranecloud-backend
+  # repository: gcr.io/crane-cloud-274413/cranecloud-backend
+  repository: mubangizi/cc-backend
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
 imagePullSecrets: []
-nameOverride: "cranecloud-backend"
+nameOverride: "cranecloud"
 fullnameOverride: ""
 
 serviceAccount:
@@ -78,12 +79,47 @@ nginxConf:
 
 environment:
   APP: "test-app"
+  DATABASE_USER: postgres
+  DATABASE_NAME: cranecloud
+  # Uncmment lines below to use a different database server
+  # DATABASE_URI: DATABASE_URI
 
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: mubangizi/cranecloud-frontend
+    pullPolicy: IfNotPresent
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
 
 celery:
   replicaCount: 1
 
-  service:
-    type: ClusterIP
-    port: 80
-    name: celery-service-account
+postgresdb:
+  image:
+    repository: postgres
+    tag: 10.8-alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  port: 5432
+
+mongodb:
+  image:
+    repository: mongo
+    tag: 4.2.3
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  port: 27017
+
+redis:
+  image:
+    repository: redis
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  port: 6379

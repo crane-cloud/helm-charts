@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mongodb
+  labels:
+    app: {{ .Release.Name }}
+    component: mongodb
+spec:
+  replicas: {{ .Values.mongodb.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      component: mongodb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        component: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+
+          ports:
+            - name: mongodb
+              containerPort: {{ .Values.mongodb.port }}
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-mongodb
+  labels:
+    app: {{ .Release.Name }}
+    component: postgresdb
+spec:
+  selector:
+    app: {{ .Release.Name }}
+    component: postgresdb
+  ports:
+    - port: {{ .Values.mongodb.port }}
+      targetPort: mongodb

@@ -39,10 +39,13 @@ spec:
           env:
           - name: test
             value: test
+          - name: DATABASE_URI
+            value: "postgresql://{{.Values.environment.DATABASE_USER}}:postgres@{{ .Release.Name }}-postgresdb:{{ .Values.postgresdb.port }}/{{.Values.environment.DATABASE_NAME}}"
           {{- range $key, $value := .Values.environment }}
           - name: {{ $key }}
             value: {{ $value | quote }}
           {{- end }}
+          
           ports:
             - name: flask-api
               containerPort: 5000
