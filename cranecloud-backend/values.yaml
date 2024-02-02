@@ -115,6 +115,10 @@ mongodb:
     pullPolicy: IfNotPresent
   replicaCount: 1
   port: 27017
+  environment:
+    MONGO_INITDB_ROOT_USERNAME: crane
+    MONGO_INITDB_ROOT_PASSWORD: password
+    MONGO_INITDB_DATABASE: cranecloud
 
 redis:
   image:

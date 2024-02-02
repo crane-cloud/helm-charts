@@ -45,6 +45,10 @@ spec:
           env:
           - name: test
             value: test
+          - name: DATABASE_URI
+            value: "postgresql://{{.Values.environment.DATABASE_USER}}:postgres@{{ .Release.Name }}-postgresdb:{{ .Values.postgresdb.port }}/{{.Values.environment.DATABASE_NAME}}"
+          - name: MONGO_URI
+            value: "mongodb://{{.Values.mongodb.environment.MONGO_INITDB_ROOT_USERNAME}}:{{.Values.mongodb.environment.MONGO_INITDB_ROOT_PASSWORD}}@{{ .Release.Name }}-mongodb:{{ .Values.mongodb.port }}/{{.Values.mongodb.environment.MONGO_INITDB_DATABASE}}"
           {{- range $key, $value := .Values.environment }}
           - name: {{ $key }}
             value: {{ $value | quote }}

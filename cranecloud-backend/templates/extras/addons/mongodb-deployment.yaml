@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-mongodb
+  name: "{{ .Release.Name }}-mongodb"
   labels:
     app: {{ .Release.Name }}
     component: mongodb
@@ -21,17 +21,31 @@ spec:
         - name: mongodb
           image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
           imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
-
           ports:
             - name: mongodb
               containerPort: {{ .Values.mongodb.port }}
-
-
+          env:
+          - name: MONGO_INITDB_ROOT_USERNAME
+            value: {{.Values.environment.MONGO_USER }}
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            value: {{.Values.environment.MONGO_USER_PASSWORD }}
+          - name: MONGO_INITDB_DATABASE
+            value: {{.Values.environment.MONGO_INITDB_DATABASE }}
+          - name: MONGODB_DATA_DIR
+            value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: "{{ .Release.Name }}-mongodb-pvc"
+            
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-mongodb
+  name: "{{ .Release.Name }}-mongodb"
   labels:
     app: {{ .Release.Name }}
     component: postgresdb
@@ -42,3 +56,20 @@ spec:
   ports:
     - port: {{ .Values.mongodb.port }}
       targetPort: mongodb
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{ .Release.Name }}-mongodb-pvc"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+
+
+
