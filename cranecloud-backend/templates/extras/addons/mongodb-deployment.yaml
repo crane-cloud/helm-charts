@@ -32,7 +32,7 @@ spec:
           - name: MONGO_INITDB_DATABASE
             value: {{.Values.environment.MONGO_INITDB_DATABASE }}
           - name: MONGODB_DATA_DIR
-            value: /var/lib/postgresql/data/pgdata
+            value: /data/db
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
@@ -48,11 +48,11 @@ metadata:
   name: "{{ .Release.Name }}-mongodb"
   labels:
     app: {{ .Release.Name }}
-    component: postgresdb
+    component: mongodb
 spec:
   selector:
     app: {{ .Release.Name }}
-    component: postgresdb
+    component: mongodb
   ports:
     - port: {{ .Values.mongodb.port }}
       targetPort: mongodb

@@ -1,3 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  FLASK_APP: 'server.py'
+  FLASK_ENV: 'production'
+  FLASK_APP_SECRET: "qY2i691SX2sEuZ7LUjY180RSv6xCVI4Jmw3qCeUiyV0i0vzmg" 
+  DATABASE_URI: "postgresql://{{.Values.environment.DATABASE_USER}}:postgres@{{ .Release.Name }}-postgresdb:{{ .Values.postgresdb.port }}/{{.Values.environment.DATABASE_NAME}}"
+  MONGO_URI: "mongodb://{{.Values.mongodb.environment.MONGO_INITDB_ROOT_USERNAME}}:{{.Values.mongodb.environment.MONGO_INITDB_ROOT_PASSWORD}}@{{ .Release.Name }}-mongodb:{{ .Values.mongodb.port }}/{{.Values.mongodb.environment.MONGO_INITDB_DATABASE}}"
+  REDIS_URL: "redis://{{.Release.Name}}-redis:{{.Values.redis.port}}"
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,13 +49,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: test
-            value: test
-          - name: DATABASE_URI
-            value: "postgresql://{{.Values.environment.DATABASE_USER}}:postgres@{{ .Release.Name }}-postgresdb:{{ .Values.postgresdb.port }}/{{.Values.environment.DATABASE_NAME}}"
-          - name: MONGO_URI
-            value: "mongodb://{{.Values.mongodb.environment.MONGO_INITDB_ROOT_USERNAME}}:{{.Values.mongodb.environment.MONGO_INITDB_ROOT_PASSWORD}}@{{ .Release.Name }}-mongodb:{{ .Values.mongodb.port }}/{{.Values.mongodb.environment.MONGO_INITDB_DATABASE}}"
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+          env:        
           {{- range $key, $value := .Values.environment }}
           - name: {{ $key }}
             value: {{ $value | quote }}
