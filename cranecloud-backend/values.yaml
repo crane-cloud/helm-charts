@@ -81,8 +81,14 @@ environment:
   APP: "test-app"
   DATABASE_USER: postgres
   DATABASE_NAME: cranecloud
-  # Uncmment lines below to use a different database server
+  # Uncmment lines below if you want to use your own
   # DATABASE_URI: DATABASE_URI
+  # FLASK_APP: 
+  # FLASK_ENV: 
+  # FLASK_APP_SECRET: 
+  # DATABASE_URI: 
+  # MONGO_URI:
+  # REDIS_URL: 
 
 
 frontend:

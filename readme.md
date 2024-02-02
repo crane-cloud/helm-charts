@@ -7,7 +7,7 @@ This is the helm chart for the cranecloud project. It is a collection of microse
 Before you can install the chart, you need to add the Cranecloud Helm repository to your Helm client.
 
 ```bash
-helm repo add cranecloud https://cranecloud.github.io/helm-charts
+helm repo add cranecloud https://cranecloud.github.io/helm-charts/
 ```
 
 ### Installing the Chart
