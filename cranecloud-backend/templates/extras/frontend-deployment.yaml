@@ -25,5 +25,6 @@ spec:
               containerPort: {{ .Values.frontend.service.port }}
           env:
             - name: REACT_APP_API_BASE_URL
-              value: http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+              # value: http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
+              value: http://{{ .Release.Name }}
 
