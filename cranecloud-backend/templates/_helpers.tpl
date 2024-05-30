@@ -2,41 +2,24 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "cranecloud-backend.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "cranecloud.name" -}}
+{{- default .Release.Name .Values.nameOverride .Chart.Name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "cranecloud-backend.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "cranecloud-backend.chart" -}}
+{{- define "cranecloud.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "cranecloud-backend.labels" -}}
-helm.sh/chart: {{ include "cranecloud-backend.chart" . }}
-{{ include "cranecloud-backend.selectorLabels" . }}
+{{- define "cranecloud.labels" -}}
+helm.sh/chart: {{ include "cranecloud.chart" . }}
+{{ include "cranecloud.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,18 +29,18 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "cranecloud-backend.selectorLabels" -}}
-app: {{ include "cranecloud-backend.name" . }}
-app.kubernetes.io/name: {{ include "cranecloud-backend.name" . }}
+{{- define "cranecloud.selectorLabels" -}}
+app: {{ include "cranecloud.name" . }}
+app.kubernetes.io/name: {{ include "cranecloud.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "cranecloud-backend.serviceAccountName" -}}
+{{- define "cranecloud.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "cranecloud-backend.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "cranecloud.name" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

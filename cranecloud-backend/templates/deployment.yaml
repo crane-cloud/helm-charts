@@ -1,27 +1,14 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-config
-data:
-  FLASK_APP: 'server.py'
-  FLASK_ENV: 'production'
-  FLASK_APP_SECRET: "qY2i691SX2sEuZ7LUjY180RSv6xCVI4Jmw3qCeUiyV0i0vzmg" 
-  DATABASE_URI: "postgresql://{{.Values.environment.DATABASE_USER}}:postgres@{{ .Release.Name }}-postgresdb:{{ .Values.postgresdb.port }}/{{.Values.environment.DATABASE_NAME}}"
-  MONGO_URI: "mongodb://{{.Values.mongodb.environment.MONGO_INITDB_ROOT_USERNAME}}:{{.Values.mongodb.environment.MONGO_INITDB_ROOT_PASSWORD}}@{{ .Release.Name }}-mongodb:{{ .Values.mongodb.port }}/{{.Values.mongodb.environment.MONGO_INITDB_DATABASE}}"
-  REDIS_URL: "redis://{{.Release.Name}}-redis:{{.Values.redis.port}}"
-
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cranecloud-backend.fullname" . }}
+  name: {{ include "cranecloud.name" . }}
   labels:
-    {{- include "cranecloud-backend.labels" . | nindent 4 }}
+    {{- include "cranecloud.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "cranecloud-backend.selectorLabels" . | nindent 6 }}
+      {{- include "cranecloud.selectorLabels" . | nindent 6 }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -34,24 +21,21 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "cranecloud-backend.selectorLabels" . | nindent 8 }}
+        {{- include "cranecloud.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "cranecloud-backend.serviceAccountName" . }}
+      serviceAccountName: {{ include "cranecloud.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ include "cranecloud-backend.name" . }}
+        - name: {{ include "cranecloud.name" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-            - configMapRef:
-                name: {{ .Release.Name }}-config
           env:        
           {{- range $key, $value := .Values.environment }}
           - name: {{ $key }}
@@ -59,17 +43,9 @@ spec:
           {{- end }}
           
           ports:
-            - name: flask-api
+            - name: backend-api
               containerPort: 5000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: flask-api
-          readinessProbe:
-            httpGet:
-              path: /
-              port: flask-api
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: nginx

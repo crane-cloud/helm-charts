@@ -1,4 +1,4 @@
-# Frontend application
+{{- if .Values.frontend.create -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,6 +25,5 @@ spec:
               containerPort: {{ .Values.frontend.service.port }}
           env:
             - name: REACT_APP_API_BASE_URL
-              # value: http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local
-              value: http://{{ .Release.Name }}
-
+              value: {{ .Values.frontend.environment.REACT_APP_API_BASE_URL }}
+{{- end}}

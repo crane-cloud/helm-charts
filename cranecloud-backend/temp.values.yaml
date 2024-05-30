@@ -1,0 +1,10 @@
+frontend:
+  create: true
+redis:
+  create: true
+postgresdb:
+  create: true
+celery:
+  create: true
+mongo:
+  create: true

@@ -6,7 +6,6 @@ replicaCount: 1
 
 image:
   repository: gcr.io/crane-cloud-274413/cranecloud-backend
-  # repository: mubangizi/cc-backend
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
@@ -90,11 +89,11 @@ environment:
   # MONGO_URI:
   # REDIS_URL: 
 
-
 frontend:
+  create: false
   replicaCount: 1
   image:
-    repository: mubangizi/cranecloud-frontend
+    repository: cranecloud/frontend
     pullPolicy: IfNotPresent
     tag: latest
   service:
@@ -102,34 +101,48 @@ frontend:
     port: 3000
     targetPort: 3000
     protocol: TCP
+  environment:
+    REACT_APP_API_BASE_URL: http://{{ .Release.Name }}
 
 celery:
-  replicaCount: 1
+  create: false
+  command:
+    - "celery"
+    - "-A"
+    - "server.celery"
+    - "worker"
+    - "--loglevel=info"
+  port: 5002
 
 postgresdb:
+  create: false
   image:
     repository: postgres
     tag: 10.8-alpine
     pullPolicy: IfNotPresent
   replicaCount: 1
   port: 5432
+  storage: 1Gi
+  environment:
+    DATABASE_USER: crane
+    DATABASE_NAME: cranecloud
+    
+redis:
+  create: false
+  replicas: 1
+  port: 6379
+  storage: 1Gi
 
-mongodb:
+mongo:
+  create: false
   image:
     repository: mongo
-    tag: 4.2.3
+    tag: latest
     pullPolicy: IfNotPresent
-  replicaCount: 1
+  replicas: 1
   port: 27017
+  storage: 1Gi
   environment:
     MONGO_INITDB_ROOT_USERNAME: crane
     MONGO_INITDB_ROOT_PASSWORD: password
     MONGO_INITDB_DATABASE: cranecloud
-
-redis:
-  image:
-    repository: redis
-    tag: latest
-    pullPolicy: IfNotPresent
-  replicaCount: 1
-  port: 6379
