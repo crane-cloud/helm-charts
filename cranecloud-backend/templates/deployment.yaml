@@ -44,7 +44,7 @@ spec:
           
           ports:
             - name: backend-api
-              containerPort: 5000
+              containerPort: {{ .Values.port }}
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

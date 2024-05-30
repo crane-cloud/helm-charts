@@ -75,6 +75,7 @@ nginxConf:
             proxy_set_header Host "localhost";
         }
     }
+port: 5000
 
 environment:
   APP: "test-app"
@@ -126,7 +127,7 @@ postgresdb:
   environment:
     DATABASE_USER: crane
     DATABASE_NAME: cranecloud
-    
+
 redis:
   create: false
   replicas: 1
