@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "cranecloud-backend.fullname" . }}
+  name: {{ include "cranecloud.name" . }}
   labels:
-    {{- include "cranecloud-backend.labels" . | nindent 4 }}
+    {{- include "cranecloud.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "cranecloud-backend.selectorLabels" . | nindent 4 }}
+    {{- include "cranecloud.selectorLabels" . | nindent 4 }}

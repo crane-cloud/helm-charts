@@ -11,7 +11,7 @@ image:
   tag: latest
 
 imagePullSecrets: []
-nameOverride: "cranecloud-backend"
+nameOverride: "cranecloud"
 fullnameOverride: ""
 
 serviceAccount:
@@ -75,15 +75,75 @@ nginxConf:
             proxy_set_header Host "localhost";
         }
     }
+port: 5000
 
 environment:
   APP: "test-app"
+  DATABASE_USER: postgres
+  DATABASE_NAME: cranecloud
+  # Uncmment lines below if you want to use your own
+  # DATABASE_URI: DATABASE_URI
+  # FLASK_APP: 
+  # FLASK_ENV: 
+  # FLASK_APP_SECRET: 
+  # DATABASE_URI: 
+  # MONGO_URI:
+  # REDIS_URL: 
 
-
-celery:
+frontend:
+  create: false
   replicaCount: 1
-
+  image:
+    repository: cranecloud/frontend
+    pullPolicy: IfNotPresent
+    tag: latest
   service:
     type: ClusterIP
-    port: 80
-    name: celery-service-account
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  environment:
+    REACT_APP_API_BASE_URL: http://{{ .Release.Name }}
+
+celery:
+  create: false
+  command:
+    - "celery"
+    - "-A"
+    - "server.celery"
+    - "worker"
+    - "--loglevel=info"
+  port: 5002
+
+postgresdb:
+  create: false
+  image:
+    repository: postgres
+    tag: 10.8-alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  port: 5432
+  storage: 1Gi
+  environment:
+    DATABASE_USER: crane
+    DATABASE_NAME: cranecloud
+
+redis:
+  create: false
+  replicas: 1
+  port: 6379
+  storage: 1Gi
+
+mongo:
+  create: false
+  image:
+    repository: mongo
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 27017
+  storage: 1Gi
+  environment:
+    MONGO_INITDB_ROOT_USERNAME: crane
+    MONGO_INITDB_ROOT_PASSWORD: password
+    MONGO_INITDB_DATABASE: cranecloud

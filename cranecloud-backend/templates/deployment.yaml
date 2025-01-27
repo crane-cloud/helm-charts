@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cranecloud-backend.fullname" . }}
+  name: {{ include "cranecloud.name" . }}
   labels:
-    {{- include "cranecloud-backend.labels" . | nindent 4 }}
+    {{- include "cranecloud.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "cranecloud-backend.selectorLabels" . | nindent 6 }}
+      {{- include "cranecloud.selectorLabels" . | nindent 6 }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -21,40 +21,31 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "cranecloud-backend.selectorLabels" . | nindent 8 }}
+        {{- include "cranecloud.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "cranecloud-backend.serviceAccountName" . }}
+      serviceAccountName: {{ include "cranecloud.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ include "cranecloud-backend.name" . }}
+        - name: {{ include "cranecloud.name" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: test
-            value: test
+          env:        
           {{- range $key, $value := .Values.environment }}
           - name: {{ $key }}
             value: {{ $value | quote }}
           {{- end }}
+          
           ports:
-            - name: flask-api
-              containerPort: 5000
+            - name: backend-api
+              containerPort: {{ .Values.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: flask-api
-          readinessProbe:
-            httpGet:
-              path: /
-              port: flask-api
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: nginx
